@@ -1,0 +1,27 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    - cron: '0 12 * * 1'
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Acorda o Supabase
+        run: |
+          RESPOSTA=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/keep_alive" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json")
+
+          echo "Status HTTP: $RESPOSTA"
+
+          if [ "$RESPOSTA" != "200" ]; then
+            echo "Falha ao contatar o Supabase. Status retornado: $RESPOSTA"
+            exit 1
+          fi
+
+          echo "Supabase acordado com sucesso."
