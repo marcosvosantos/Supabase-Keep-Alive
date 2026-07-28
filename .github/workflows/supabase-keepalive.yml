@@ -14,7 +14,7 @@ jobs:
         run: |
           set +e
           RESPOSTA=$(curl -s -o /tmp/resposta.txt -w "%{http_code}" \
-            --retry 3 --retry-delay 5 --retry-all-errors \
+            --ipv4 --retry 5 --retry-delay 5 --retry-all-errors \
             --connect-timeout 10 --max-time 30 \
             -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/keep_alive" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
