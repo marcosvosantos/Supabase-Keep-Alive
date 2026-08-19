@@ -15,6 +15,21 @@ jobs:
           sudo rm -f /etc/resolv.conf
           printf 'nameserver 1.1.1.1\nnameserver 8.8.8.8\n' | sudo tee /etc/resolv.conf
 
+      - name: Valida formato do secret SUPABASE_URL (sem expor o valor)
+        run: |
+          URL="${{ secrets.SUPABASE_URL }}"
+          echo "Comprimento da URL: ${#URL} caracteres"
+          case "$URL" in
+            https://*) echo "OK: começa com https://" ;;
+            "") echo "ERRO: secret SUPABASE_URL está vazio" ;;
+            *) echo "ERRO: não começa com https://" ;;
+          esac
+          case "$URL" in
+            *.supabase.co) echo "OK: termina em .supabase.co" ;;
+            *supabase.co/) echo "ERRO: tem barra final depois de .supabase.co" ;;
+            *) echo "ERRO: não termina em .supabase.co (verifique espaço, quebra de linha ou caractere extra)" ;;
+          esac
+
       - name: Acorda o Supabase
         run: |
           set +e
